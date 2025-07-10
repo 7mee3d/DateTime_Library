@@ -1,21 +1,32 @@
-﻿#pragma once
+#pragma once
 #pragma warning ( disable : 4996 ) 
 
 #include <iostream> 
 #include <ctime> 
 #include <string> 
 #include<vector> 
+#include"clsUillity.h" 
+#include <time.h>
+#include <locale.h>
 #include<iomanip> 
+#include"clsString.h" 
 
 
-using namespace  std; 
 
-#define _Integer  int
 
-namespace myDate {
+
+using namespace std;
+
+
+class clsDate
+{
+
+private:
+
+#define Integer  int 
 
 	//Enumrations 
-	
+
 
 	enum enDayOfWeek {
 
@@ -44,837 +55,1145 @@ namespace myDate {
 		kDECEMBER = 11,
 	};
 
-	enum enCompareTwoDate {
-
-		kBEFORE = -1 ,
-		kEQUAL = 0 , 
-		kAFTER = 1 
-	};
-
-
-	//Structures 
-	
-	struct stDateInformation {
-
-		unsigned short _Integer kYEAR{};
-		unsigned short _Integer kMONTH{};
-		unsigned short _Integer kDAY {};
-
-	};
-
-
-	struct stPeriodOfDate {
-
-		stDateInformation startDate{};
-		stDateInformation endDate{};
-
-	}; 
-
-	//stDateInformation increasingDayByX(stDateInformation date, unsigned short int const kNUMBER_ADDING_DAY_NEW);
 
 	//Constants 
 
-	unsigned short _Integer const kZERO{ 0 };
-	unsigned short _Integer const kONE_HUNDRED{ 100 };
-	unsigned short _Integer const kFOUR_HUNDRED{ 400 };
-	unsigned short _Integer const kNUMBER_FOUR{ 4 };
-	unsigned short _Integer       kNUMBER_DAY_IN_YEAR_ORGINAL { 365 };
-	unsigned short _Integer const kNUMBER_HOUR_IN_DAY {24 };
-	unsigned short _Integer const kNUMBER_MINTUES_IN_DAY { 60 };
-	unsigned short _Integer const kNUMBER_SECOUNDS_IN_DAY { 60 };
-	unsigned short _Integer const kNUMBER_OF_WEEK { 7 };
-	unsigned short _Integer const kNUMBER_MONTH  { 12 };
-	unsigned short _Integer const kNUMBER_FIRST_MONTH { 1 };
-	unsigned short _Integer const kONE  { 1 };
-	unsigned short _Integer const kNUMBER_ONE_DECADE   { 10 };
-	unsigned short _Integer const kNUMBER_ONE_CENTURY  { 100 };
-	unsigned short _Integer const kNUMBER_ONE_MILLENNIUM  { 1000 };
+	static unsigned short Integer const _kZERO{ 0 };
+	static unsigned short Integer const _kONE_HUNDRED{ 100 };
+	static unsigned short Integer const _kFOUR_HUNDRED{ 400 };
+	static unsigned short Integer const _kNUMBER_FOUR{ 4 };
+	static unsigned short Integer const _kNUMBER_DAY_IN_YEAR_ORGINAL{ 365 };
+	static unsigned short Integer const _kNUMBER_HOUR_IN_DAY{ 24 };
+	static unsigned short Integer const _kNUMBER_MINTUES_IN_DAY{ 60 };
+	static unsigned short Integer const _kNUMBER_SECOUNDS_IN_DAY{ 60 };
+	static unsigned short Integer const _kNUMBER_OF_WEEK{ 7 };
+	static unsigned short Integer const _kNUMBER_MONTH{ 12 };
+	static unsigned short Integer const _kNUMBER_FIRST_MONTH{ 1 };
+	static unsigned short Integer const _kONE{ 1 };
+	static unsigned short Integer const _kNUMBER_ONE_DECADE{ 10 };
+	static unsigned short Integer const _kNUMBER_ONE_CENTURY{ 100 };
+	static unsigned short Integer const _kNUMBER_ONE_MILLENNIUM{ 1000 };
 
+	// Members 
+
+	unsigned short Integer _Year{};
+	unsigned short Integer _Month{};
+	unsigned short Integer _Day{};
+
+
+public:
+
+	static enum enCompareTwoDate {
+
+		kBEFORE = -1,
+		kEQUAL = 0,
+		kAFTER = 1
+	};
+
+	friend class clsPeriod;
+
+	clsDate() {
+
+		time_t timee = time(NULL);
+		tm* timeUTC = localtime(&timee);
+
+		_Day = timeUTC->tm_mday;
+		_Month = timeUTC->tm_mon + 1;
+		_Year = timeUTC->tm_year + 1900;
+
+	};
 
 	/*
-			A function that checks whether a year is a leap year or not
+	clsDate(string Date ) {
 
-			leap year--> 466 Day 
-			Not Leap ( Orginal Year ) --> 465 Day
+		vector<string> vDate = clsString::splitWordInText(Date, "/");
+
+
+				setDay( stoi(vDate[0]));
+				setMonth( stoi(vDate[1]));
+				setYear ( stoi(vDate[2]));
+
+
+
+	}
 	*/
+	clsDate(unsigned short const& kDAY, unsigned short const& kMONTH, unsigned short const& kYEAR)
 
-	bool isLeapYear(unsigned short _Integer const kYEAR) {
+		: _Year{ kYEAR }, _Month{ kMONTH }, _Day{ kDAY } {
+	};
 
-		if (kYEAR % kFOUR_HUNDRED == kZERO) //kFOUR_HUNDRED --> 400 
-			return true; 
-		else if (kYEAR % kONE_HUNDRED == kZERO) //kONE_HUNDRED --> 100 
-			return false; 
-		else if (kYEAR % kNUMBER_FOUR == kZERO) //kNUMBER_FOUR --> 4 
-			return true; 
+
+	clsDate(unsigned short Integer numberOfDay, unsigned short const& kYEAR) {
+
+		clsDate date = convertNumberBeginingYearToDate(kYEAR, numberOfDay);
+
+		_Year = date._Year;
+		_Day = date._Day;
+		_Month = date._Month;
+
+	};
+
+	void setYear(unsigned short Integer const _kYEAR) {
+		this->_Year = _kYEAR;
+	}
+
+	unsigned short Integer getYear(void) {
+		return this->_Year;
+	}
+
+	__declspec (property (get = getYear, put = setYear)) unsigned short Integer YEAR;
+
+	void setMonth(unsigned short Integer const _kMONTH) {
+		this->_Month = _kMONTH;
+	}
+
+	unsigned short Integer getMonth(void) {
+		return this->_Month;
+	}
+	__declspec (property (get = getMonth, put = setMonth)) unsigned short Integer MONTH;
+
+	void setDay(unsigned short Integer const _kDAY) {
+		this->_Day = _kDAY;
+	}
+
+	unsigned short Integer getDay(void) {
+		return this->_Day;
+	}
+	__declspec (property (get = getDay, put = setDay)) unsigned short Integer DAY;
+
+
+	clsDate ReadInformationDateInSystem(void) {
+
+		clsDate date(0, 0, 0);
+
+		time_t  timee = time(NULL);
+		tm* timeUTC = localtime(&timee);
+
+		date.setDay(timeUTC->tm_mday);
+		date.setMonth(timeUTC->tm_mon + 1);
+		date.setYear(timeUTC->tm_year + 1900);
+
+		return date;
+	}
+
+
+
+	static inline bool isLeapYear(unsigned short Integer const kYEAR) {
+
+		if (kYEAR % _kFOUR_HUNDRED == _kZERO) //kFOUR_HUNDRED --> 400 
+			return true;
+		else if (kYEAR % _kONE_HUNDRED == _kZERO) //kONE_HUNDRED --> 100 
+			return false;
+		else if (kYEAR % _kNUMBER_FOUR == _kZERO) //kNUMBER_FOUR --> 4 
+			return true;
 
 		else
-		return false; 
+			return false;
 
-		//return (kYEAR % 4 == ::kZERO && kYEAR % 100 != ::kZERO) || (kYEAR % 400 == ::kZERO);
-		//return kYEAR % 100 == kZERO ? kYEAR % 400 == kZERO : kYEAR % 4 == kZERO; 
-	}
+		//return (kYEAR % 4 == _kZERO && kYEAR % 100 != _kZERO) || (kYEAR % 400 == _kZERO);
+		//return kYEAR % 100 == _kZERO ? kYEAR % 400 == _kZERO : kYEAR % 4 == _kZERO; 
+	};
+
+	bool isLeapYear(void) {
+		return isLeapYear(_Year);
+	};
 
 
-	/*
-			Return the number of days if leap 366 and non-leap 365
-	*/
-	unsigned short _Integer numberOfDayInYear(unsigned short _Integer const kYEAR) {
 
-		return isLeapYear(kYEAR) ? ++kNUMBER_DAY_IN_YEAR_ORGINAL : kNUMBER_DAY_IN_YEAR_ORGINAL  ;
-	}
+	//Return the number of days if leap 366 and non-leap 365
+	static inline unsigned short Integer numberOfDayInYear(unsigned short Integer const kYEAR) {
 
-	unsigned short _Integer numberOfDayInMonth(unsigned short _Integer const kYEAR, unsigned short _Integer const kMONTH) {
+		return isLeapYear(kYEAR) ? _kNUMBER_DAY_IN_YEAR_ORGINAL + _kONE : _kNUMBER_DAY_IN_YEAR_ORGINAL;
+	};
 
-		if (kMONTH < kONE || kMONTH >  kNUMBER_MONTH ) return kZERO;
+	unsigned short Integer numberOfDayInYear(void) {
+		return  numberOfDayInYear(_Year);
+	};
 
-		//unsigned short int const kDAY_OF_MONTH[13]{ kZERO , 31 , 28 , 31 , 30 , 31 , 30 , 31 , 31 , 30 , 31 , 30 , 31 }; 
-		unsigned short int const kDAY_OF_MONTH[13]{ kZERO , 1 , 0 , 1 , 0 , 1 , 0 , 1 , 1 , 0 , 1 , 0 , 1 }; 
+
+	static inline unsigned short Integer numberOfDayInMonth(unsigned short Integer const kYEAR, unsigned short Integer const kMONTH) {
+
+		if (kMONTH < _kONE || kMONTH >  _kNUMBER_MONTH) return _kZERO;
+
+		//unsigned short Integer const kDAY_OF_MONTH[13]{ kZERO , 31 , 28 , 31 , 30 , 31 , 30 , 31 , 31 , 30 , 31 , 30 , 31 }; 
+		unsigned short Integer const kDAY_OF_MONTH[13]{ _kZERO , 1 , 0 , 1 , 0 , 1 , 0 , 1 , 1 , 0 , 1 , 0 , 1 };
 		return (kMONTH == 2) ? isLeapYear(kYEAR) ? 29 : 28 : kDAY_OF_MONTH[kMONTH] + 30;
 
 		//return (kMONTH == 2)? isLeapYear(kYEAR) ? 29 : 28  : kDAY_OF_MONTH[kMONTH]  ;
-	}
+	};
+
+	unsigned short Integer numberOfDayInMonth(void) {
+		return numberOfDayInMonth(_Year, _Month);
+	};
 
 
 	// --------------------------------- Calc year ----------------------------------
 
 
 	//Calculating the number of hours in a day 
-	_Integer calcNumberOfHourInYear( _Integer const kYEAR) {
+	static inline Integer calcNumberOfHourInYear(Integer const kYEAR) {
 
-		return (numberOfDayInYear (kYEAR ) * kNUMBER_HOUR_IN_DAY);
+		return (numberOfDayInYear(kYEAR) * _kNUMBER_HOUR_IN_DAY);
 
 	}
+	Integer calcNumberOfHourInYear(void) {
+		return calcNumberOfHourInYear(_Year);
+	};
 
 	//Calculating the number of minutes in a day
-	_Integer calcNumberOfMinutsInYear(_Integer const kYEAR) {
-		return (kNUMBER_MINTUES_IN_DAY * calcNumberOfHourInYear (kYEAR));
-	}
+	static inline Integer calcNumberOfMinutsInYear(Integer const kYEAR) {
+		return (_kNUMBER_MINTUES_IN_DAY * calcNumberOfHourInYear(kYEAR));
+	};
+
+	Integer calcNumberOfMinutsInYear(void) {
+		return calcNumberOfMinutsInYear(_Year);
+	};
 
 	//Calculating the number of Secoounds in a day
-	_Integer calcNumberOfSecoundsInYear(_Integer const kYEAR) {
-		return (kNUMBER_SECOUNDS_IN_DAY * calcNumberOfMinutsInYear (kYEAR));
-	}
+	static inline Integer calcNumberOfSecoundsInYear(Integer const kYEAR) {
+		return (_kNUMBER_SECOUNDS_IN_DAY * calcNumberOfMinutsInYear(kYEAR));
+	};
 
+	Integer calcNumberOfSecoundsInYear(void) {
+		return calcNumberOfSecoundsInYear(_Year);
+	};
 
 	// --------------------------------- Calc month ----------------------------------
 
-	//Calculating the number of hours in a month 
-	_Integer calcNumberOfHourInMonth(_Integer const kYEAR , _Integer const kMONTH) {
+	 //Calculating the number of hours in a month 
+	static inline Integer calcNumberOfHourInMonth(Integer const kYEAR, Integer const kMONTH) {
 
-		return (numberOfDayInMonth(kYEAR , kMONTH) * kNUMBER_HOUR_IN_DAY);
+		return (numberOfDayInMonth(kYEAR, kMONTH) * _kNUMBER_HOUR_IN_DAY);
 
-	}
+	};
+
+	Integer calcNumberOfHourInMonth(void) {
+		return  calcNumberOfHourInMonth(_Year, _Month);
+	};
+
 
 	//Calculating the number of minutes in a month
-	_Integer calcNumberOfMinutsInMonth(_Integer const kYEAR,  _Integer const kMONTH) {
-		return (kNUMBER_MINTUES_IN_DAY * calcNumberOfHourInMonth(kYEAR , kMONTH));
-	}
+	static inline Integer calcNumberOfMinutsInMonth(Integer const kYEAR, Integer const kMONTH) {
+		return (_kNUMBER_MINTUES_IN_DAY * calcNumberOfHourInMonth(kYEAR, kMONTH));
+	};
+
+	Integer calcNumberOfMinutsInMonth(void) {
+		return calcNumberOfMinutsInMonth(_Year, _Month);
+	};
+
 
 	//Calculating the number of Secoounds in a month
-	_Integer calcNumberOfSecoundsInMonth(_Integer const kYEAR,  _Integer const kMONTH) {
-		return (kNUMBER_SECOUNDS_IN_DAY * calcNumberOfMinutsInMonth(kYEAR , kMONTH));
-	}
+	static inline Integer calcNumberOfSecoundsInMonth(Integer const kYEAR, Integer const kMONTH) {
+		return (_kNUMBER_SECOUNDS_IN_DAY * calcNumberOfMinutsInMonth(kYEAR, kMONTH));
+	};
+
+	Integer calcNumberOfSecoundsInMonth(void) {
+		return calcNumberOfSecoundsInMonth(_Year, _Month);
+	};
+
 	// ----------------------------------- Date Formating -------------------------------------
 
 
-	void printDateFormat(stDateInformation date, string const kSEPARATOR = "/") {
+	static inline void printDateFormat(clsDate& date, string const kSEPARATOR = "/") {
 
-
-		cout << date.kDAY << kSEPARATOR << date.kMONTH << kSEPARATOR << date.kYEAR <<'\n';
+		cout << date._Day << kSEPARATOR << date._Month << kSEPARATOR << date._Year << '\n';
 
 	}
 
-	//------------------------ Find Order Day and Name of Week -----------------------------------------
+	void printDateFormat(void) {
+		return printDateFormat(*this, "/");
+	};
 
-	unsigned short _Integer findTheOrderOfDayInWeek(unsigned short _Integer const kYEAR, unsigned short _Integer const kMOUNTH, unsigned short _Integer const kDAY = {1}) {
-	
-		unsigned short _Integer const kNUMBER_FOUTEEN{ 14 };
-		unsigned short _Integer const kNUMBER_MOUNTH_OF_YEAR{ kNUMBER_MONTH };
-		unsigned short _Integer const kNUMBER_DAY_OF_WEEK{ 7 };
 
-		unsigned short _Integer const a = ((kNUMBER_FOUTEEN - kMOUNTH) / kNUMBER_MOUNTH_OF_YEAR);
-		unsigned short _Integer const year = kYEAR - a;
+	static inline unsigned short Integer findTheOrderOfDayInWeek(unsigned short Integer const kYEAR, unsigned short Integer const kMOUNTH, unsigned short Integer const kDAY = { 1 }) {
 
-		unsigned short _Integer const mounth = kMOUNTH + (a * kNUMBER_MOUNTH_OF_YEAR) - 2;
+		unsigned short Integer const kNUMBER_FOUTEEN{ 14 };
+		unsigned short Integer const kNUMBER_MOUNTH_OF_YEAR{ _kNUMBER_MONTH };
+		unsigned short Integer const kNUMBER_DAY_OF_WEEK{ 7 };
 
-		unsigned short _Integer const dayBornOrder = (kDAY + year + (year / 4) - (year / 100) + (year / 400) + ((31 * mounth) / kNUMBER_MOUNTH_OF_YEAR)) % kNUMBER_DAY_OF_WEEK;
+		unsigned short Integer const a = ((kNUMBER_FOUTEEN - kMOUNTH) / kNUMBER_MOUNTH_OF_YEAR);
+		unsigned short Integer const year = kYEAR - a;
+
+		unsigned short Integer const mounth = kMOUNTH + (a * kNUMBER_MOUNTH_OF_YEAR) - 2;
+
+		unsigned short Integer const dayBornOrder = (kDAY + year + (year / 4) - (year / 100) + (year / 400) + ((31 * mounth) / kNUMBER_MOUNTH_OF_YEAR)) % kNUMBER_DAY_OF_WEEK;
 
 
 		return dayBornOrder;
 	}
 
-	unsigned short _Integer findTheOrderOfDayInWeek(stDateInformation &date) {
-/*
-		unsigned short _Integer const kNUMBER_FOUTEEN{ 14 };
-		unsigned short _Integer const kNUMBER_MOUNTH_OF_YEAR{ kNUMBER_MONTH };
-		unsigned short _Integer const kNUMBER_DAY_OF_WEEK{ 7 };
 
-		unsigned short _Integer const a = ((kNUMBER_FOUTEEN - date.kMONTH) / kNUMBER_MOUNTH_OF_YEAR);
-		unsigned short _Integer const year = date.kYEAR - a;
 
-		unsigned short _Integer const mounth = date.kMONTH + (a * kNUMBER_MOUNTH_OF_YEAR) - 2;
 
-		unsigned short _Integer const dayBornOrder = (date.kDAY + year + (year / 4) - (year / 100) + (year / 400) + ((31 * mounth) / kNUMBER_MOUNTH_OF_YEAR)) % kNUMBER_DAY_OF_WEEK;
-	
-		return dayBornOrder;
+	static inline unsigned short Integer findTheOrderOfDayInWeek(clsDate& date) {
 
-	*/
+		return findTheOrderOfDayInWeek(date._Year, date._Month, date._Day);
+	};
 
-		return findTheOrderOfDayInWeek(date.kYEAR, date.kMONTH, date.kDAY); 
-	}
-	
-	string findDayOfWeekString(const enDayOfWeek kDAY_INDEX_ORDER , bool IS_FULL_NAME_DAY = false ) {
+	unsigned short Integer findTheOrderOfDayInWeek(void) {
 
-		string dayOfWeek[kNUMBER_OF_WEEK]{ "Sun" , "Mon" , "Tue" , "Wed" , "Thu" , " Fri " , " Sat" };
-	
-		string dayOfWeekFull[kNUMBER_OF_WEEK]{ "Sunday" , "Monday" , "Tuesday" , "Wedneday" , "Thursday" , " Friday " , " Saturday" };
+		return  findTheOrderOfDayInWeek(*this);
+	};
+
+
+	static inline string findDayOfWeekString(const enDayOfWeek kDAY_INDEX_ORDER, bool IS_FULL_NAME_DAY = false) {
+
+		string dayOfWeek[_kNUMBER_OF_WEEK]{ "Sun" , "Mon" , "Tue" , "Wed" , "Thu" , " Fri " , " Sat" };
+
+		string dayOfWeekFull[_kNUMBER_OF_WEEK]{ "Sunday", "Monday", "Tuesday", "Wedneday", "Thursday", " Friday ", " Saturday" };
 
 		return IS_FULL_NAME_DAY ? dayOfWeekFull[kDAY_INDEX_ORDER] : dayOfWeek[kDAY_INDEX_ORDER];
-	}
+	};
 
-	
-	
-	string findNameMounthString(const enMounth kMUNTH_INDEX_ORDER, bool IS_FULL_NAME_DAY = false ) {
+	static inline string findNameMounthString(const enMounth kMUNTH_INDEX_ORDER, bool IS_FULL_NAME_DAY = false) {
 
-		string Mounth[kNUMBER_MONTH]{ "Jan" , "Feb" , "Mar" , "Apr" , "May" , " Jun " , " Jul" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" };
-	
-		string Mounth_FullName [kNUMBER_MONTH]{ "January" , "February" , "March" , "April" , "May" , " June" , "July" , "August" , "Septemper" , "Octobar" , "November" , "December" };
+		string Mounth[_kNUMBER_MONTH]{ "Jan" , "Feb" , "Mar" , "Apr" , "May" , " Jun " , " Jul" , "Aug" , "Sep" , "Oct" , "Nov" , "Dec" };
 
-		return IS_FULL_NAME_DAY ? Mounth_FullName[kMUNTH_INDEX_ORDER - kONE] :   Mounth[kMUNTH_INDEX_ORDER - kONE ];
-	}
+		string Mounth_FullName[_kNUMBER_MONTH]{ "January" , "February" , "March" , "April" , "May" , " June" , "July" , "August" , "Septemper" , "Octobar" , "November" , "December" };
+
+		return IS_FULL_NAME_DAY ? Mounth_FullName[kMUNTH_INDEX_ORDER - _kONE] : Mounth[kMUNTH_INDEX_ORDER - _kONE];
+	};
+
+	string findNameMounthStringNonStatic(const enMounth kMONTH_INDEX_ORDER, bool IS_FULL_NAME_DAY_BOOL = false) {
+
+		return findNameMounthString(kMONTH_INDEX_ORDER, IS_FULL_NAME_DAY_BOOL);
+
+	};
 
 
+	static inline  void printCalenderOfMonth(unsigned short Integer const kYEAR, unsigned short Integer const kMOUNTH) {
 
-	void printCalenderOfMonth(unsigned short _Integer const kYEAR, unsigned short _Integer const kMOUNTH) {
-	
-	
+
 		printf("\n\n----------------- %s -----------------\n\n",
-			findNameMounthString(static_cast <enMounth> (kMOUNTH )).c_str()
+			findNameMounthString(static_cast <enMounth> (kMOUNTH)).c_str()
 		);
 
 		printf(" Sun   Mon  Tue  Wed  Thu  Fri  Sat\n");
 
-		unsigned short _Integer const currentOrderDay{ findTheOrderOfDayInWeek(kYEAR, kMOUNTH) };
-		unsigned short _Integer const numberOfDayMonth{ numberOfDayInMonth(kYEAR, kMOUNTH) };
+		unsigned short Integer const currentOrderDay{ findTheOrderOfDayInWeek(kYEAR, kMOUNTH) };
+		unsigned short Integer const numberOfDayMonth{ numberOfDayInMonth(kYEAR, kMOUNTH) };
 
-		_Integer counter{ kZERO };
+		Integer counter{ _kZERO };
 		for (; counter < currentOrderDay; counter++)
-			printf("     "); 
+			printf("     ");
 
-		for (_Integer counterJ{ kONE }; counterJ <= numberOfDayMonth; counterJ++) {
+		for (Integer counterJ{ _kONE }; counterJ <= numberOfDayMonth; counterJ++) {
 
 			printf("%5d", counterJ);
 
-			if (++counter == kNUMBER_OF_WEEK ) {
-				counter = { kZERO }; 
-				printf("\n"); 
+			if (++counter == _kNUMBER_OF_WEEK) {
+				counter = { _kZERO };
+				printf("\n");
 			}
 
 		}
 
 		printf("\n\n---------------------------------------");
-	}
+	};
 
-	void printAllMonthCalenderAccordingYear(unsigned short _Integer const kYEAR) {
-		
 
-			printf("\n\n---------------------------------------");
-			printf("\n          Calender = %d                  ", kYEAR);
-			printf("\n\n---------------------------------------");
+	void printCalenderOfMonth(void) {
 
-			for (_Integer counter{ kONE }; counter <= kNUMBER_MONTH ; counter++)
-				printCalenderOfMonth(kYEAR, counter);
+		printCalenderOfMonth(_Year, _Month);
+	};
 
-		}
+	static inline void printAllMonthCalenderAccordingYear(unsigned short Integer const kYEAR) {
 
-	unsigned short int numberOfBeforeBeginingYear(unsigned short _Integer const kYEAR, unsigned short _Integer const kMOUNTH, unsigned short _Integer const kDAY = { 1 }) {
-	
-		unsigned short int totalDay{ kZERO };
-		
-		for (_Integer counter{ kONE }; counter <= kMOUNTH - kONE; counter++) {
+
+		printf("\n\n---------------------------------------");
+		printf("\n          Calender = %d                  ", kYEAR);
+		printf("\n\n---------------------------------------");
+
+		for (Integer counter{ _kONE }; counter <= _kNUMBER_MONTH; counter++)
+			printCalenderOfMonth(kYEAR, counter);
+
+	};
+
+	void printAllMonthCalenderAccordingYear(void) {
+		printAllMonthCalenderAccordingYear(_Year);
+	};
+
+
+	static inline unsigned short int numberOfBeforeBeginingYear(unsigned short Integer const kYEAR, unsigned short Integer const kMOUNTH, unsigned short Integer const kDAY = { 1 }) {
+
+		unsigned short int totalDay{ _kZERO };
+
+		for (Integer counter{ _kONE }; counter <= kMOUNTH - _kONE; counter++) {
 			totalDay += numberOfDayInMonth(kYEAR, counter);
 
 		}
 
 		totalDay += kDAY;
 
-	
-		return totalDay; 
-	}
 
-	stDateInformation  convertNumberBeginingYearToDate (unsigned short _Integer const kYEAR , unsigned short _Integer const kBEGINING_YEAR )
-		{
-			stDateInformation date{ };
+		return totalDay;
+	};
 
-			unsigned short _Integer numberBeginingTotal{ kBEGINING_YEAR };
+	unsigned short int numberOfBeforeBeginingYear(void) {
+		return numberOfBeforeBeginingYear(_Year, _Month, _Day);
+	};
 
-			date.kYEAR = kYEAR; 
-			date.kMONTH = { kONE };
-
-	/*		for (int counter{kONE}; counter <= kNUMBER_MONTH; counter++) {
-
-				unsigned short _Integer numbersDayInMonth{ numberOfDayInMonth(kYEAR , counter) };
-
-
-				if (numberBeginingTotal > numbersDayInMonth) {
-
-					numberBeginingTotal -= numbersDayInMonth;
-					date.kMONTH++; 
-				}
-				else
-					break;
-			}
-
-			date.kDAY = numberBeginingTotal;*/
-
-
-			while (true) {
-
-				unsigned short _Integer numbersDayInMonth{ numberOfDayInMonth(kYEAR ,date.kMONTH ) };
-					
-				if (numberBeginingTotal > numbersDayInMonth) {
-
-					numberBeginingTotal -= numbersDayInMonth;
-					date.kMONTH++;
-
-				}
-				else {
-					date.kDAY = numberBeginingTotal;
-					break;
-				}
-			}
-
-			return date; 
-		}
-
-
-	stDateInformation  convertNumberBeginingYearToDateAfterAddingDays (unsigned short _Integer const kYEAR, unsigned short _Integer const kBEGINING_YEAR , unsigned short _Integer const kADDING_DAYS  )
+	static inline  clsDate  convertNumberBeginingYearToDate(unsigned short Integer const kYEAR, unsigned short Integer const& kBEGINING_YEAR)
 	{
-		stDateInformation date{ };
+		clsDate date(0, 0, 0);
 
-		unsigned short _Integer numberBeginingTotal = kBEGINING_YEAR + kADDING_DAYS ;
+		unsigned short Integer numberBeginingTotal{ kBEGINING_YEAR };
 
-		date.kYEAR = kYEAR;
-		date.kMONTH = { kONE };
-		date.kDAY = { kZERO };
+		date._Year = kYEAR;
+		date._Month = { _kONE };
+
+		/*		for (Integer counter{_kONE}; counter <= _kNUMBER_MONTH; counter++) {
+
+					unsigned short Integer numbersDayInMonth{ numberOfDayInMonth(kYEAR, counter) };
 
 
-	/*	while (true) {
+					if (numberBeginingTotal > numbersDayInMonth) {
 
-			unsigned short _Integer numbersDayInMonth{ numberOfDayInMonth(date.kYEAR , date.kMONTH) };
+						numberBeginingTotal -= numbersDayInMonth;
+						date._Month++;
+					}
+					else
+						break;
+				}
 
-			if (numberBeginingTotal >= numbersDayInMonth) {
+				date._Day = numberBeginingTotal;*/
+
+
+		while (true) {
+
+			unsigned short Integer numbersDayInMonth{ numberOfDayInMonth(kYEAR ,date._Month) };
+
+			if (numberBeginingTotal > numbersDayInMonth) {
 
 				numberBeginingTotal -= numbersDayInMonth;
-				date.kMONTH++;
-
-				if (date.kMONTH > 12) {
-					date.kMONTH = 1; 
-					date.kYEAR++;
-				}
+				date._Month++;
 
 			}
 			else {
-
-				date.kDAY = numberBeginingTotal;
+				date._Day = numberBeginingTotal;
 				break;
 			}
 		}
-		*/
-
-
-		while (numberBeginingTotal > (isLeapYear(date.kYEAR) ? 366 : 365))
-		{
-			numberBeginingTotal -= (isLeapYear(date.kYEAR) ? 366 : 365);
-			date.kYEAR++;
-
-		}
-
-		date = convertNumberBeginingYearToDate(date.kYEAR , numberBeginingTotal);
 
 		return date;
-	}
+	};
 
-	bool cheakDateOneLessThanDateTwo(stDateInformation date1, stDateInformation date2) {
+	clsDate  convertNumberBeginingYearToDate(unsigned short Integer const& kNUMBER_OF_BEGUNING) {
 
-	/*	if (date1.kYEAR < date2.kYEAR) {
-			return true;
-		}
-		else if (date1.kYEAR == date2.kYEAR) {
-			if (date1.kMONTH < date2.kMONTH) {
+		return convertNumberBeginingYearToDate(_Year, kNUMBER_OF_BEGUNING);
+
+	};
+
+	static inline clsDate  convertNumberBeginingYearToDateAfterAddingDays(unsigned short Integer const& kYEAR, unsigned short Integer const& kBEGINING_YEAR, unsigned short Integer const& kADDING_DAYS)
+	{
+		clsDate date(0, 0, 0);
+
+		unsigned short Integer numberBeginingTotal = kBEGINING_YEAR + kADDING_DAYS;
+
+		date._Year = kYEAR;
+		date._Month = { _kONE };
+		date._Day = { _kZERO };
+
+
+		/*	while (true) {
+
+				unsigned short Integer numbersDayInMonth{ numberOfDayInMonth(date._Year , date._Month) };
+
+				if (numberBeginingTotal >= numbersDayInMonth) {
+
+					numberBeginingTotal -= numbersDayInMonth;
+					date._Month++;
+
+					if (date._Month > 12) {
+						date._Month = 1;
+						date._Year++;
+					}
+
+				}
+				else {
+
+					date._Day = numberBeginingTotal;
+					break;
+				}
+			};
+
+			*/
+
+		while (numberBeginingTotal > (isLeapYear(date._Year) ? 366 : 365))
+		{
+			numberBeginingTotal -= (isLeapYear(date._Year) ? 366 : 365);
+			date._Year++;
+
+		};
+
+		date = convertNumberBeginingYearToDate(date._Year, numberBeginingTotal);
+
+		return date;
+	};
+
+	clsDate  convertNumberBeginingYearToDateAfterAddingDays(unsigned short Integer const kBEGINING_YEAR, unsigned short Integer const kADDING_DAYS) {
+
+		return convertNumberBeginingYearToDateAfterAddingDays(_Year, kBEGINING_YEAR, kADDING_DAYS);
+
+	};
+
+	static inline bool cheakDateOneLessThanDateTwo(clsDate& date1, clsDate& date2) {
+
+		/*	if (date1._Year < date2._Year) {
 				return true;
 			}
-			else if (date1.kMONTH == date2.kMONTH) {
-				if (date1.kDAY < date2.kDAY) {
+			else if (date1._Year == date2._Year) {
+				if (date1._Month < date2._Month) {
 					return true;
 				}
+				else if (date1._Month == date2._Month) {
+					if (date1._Day < date2._Day) {
+						return true;
+					}
+				}
 			}
-		}
-		return false;*/
+			return false;
 
-		return (date1.kYEAR < date2.kYEAR) ? true : ((date1.kYEAR ==date2.kYEAR) ? (date1.kMONTH < date2.kMONTH ? true : (date1.kMONTH ==date2.kMONTH ? date1.kDAY < date2.kDAY : false)) : false);		
-		
-		
-		
-	}
+			*/
 
-	bool IsDate1EqualDate2(stDateInformation date1, stDateInformation date2 ) 
+		return (date1._Year < date2._Year) ? true : ((date1._Year == date2._Year) ? (date1._Month < date2._Month ? true : (date1._Month == date2._Month ? date1._Day < date2._Day : false)) : false);
+
+	};
+
+	bool cheakDateOneLessThanDateTwo(clsDate& date2) {
+		return cheakDateOneLessThanDateTwo(*this, date2);
+	};
+
+	static inline bool IsDate1EqualDate2(clsDate& date1, clsDate& date2)
 	{
 
-		return (date1.kYEAR == date2.kYEAR) ? ((date1.kMONTH ==date2.kMONTH) ? ((date1.kDAY == date2.kDAY) ? true : false): false) : false;
-		//return  date1.kYEAR == date2.kYEAR && date1.kMONTH == date2.kMONTH && date1.kDAY == date2.kDAY; 
-	
-	}
+		return (date1._Year == date2._Year) ? ((date1._Month == date2._Month) ? ((date1._Day == date2._Day) ? true : false) : false) : false;
+		//return  date1._Year == date2._Year && date1._Month == date2._Month && date1._Day == date2._Day; 
 
-	bool cheakIsLastDay(stDateInformation date) {
+	};
 
-		unsigned short _Integer const  numberDayInMonthToFindLastDay{ numberOfDayInMonth(date.kYEAR ,date.kMONTH) };
+	bool IsDate1EqualDate2(clsDate& date2) {
 
-		return (numberDayInMonthToFindLastDay == date.kDAY); 
-	
-	}
-	
-	bool cheakIsFirstDay(stDateInformation date) {
+		return IsDate1EqualDate2(*this, date2);
 
-		unsigned short _Integer const  numberDayInMonthToFindFirstDay{ kONE };
+	};
 
-		return (numberDayInMonthToFindFirstDay == date.kDAY);
 
-	}
+	static inline bool cheakIsLastDay(clsDate& date) {
 
-	bool cheakIsLastMonth(stDateInformation date) {
+		unsigned short Integer const  numberDayInMonthToFindLastDay{ numberOfDayInMonth(date._Year ,date._Month) };
 
-		return (date.kMONTH  == kNUMBER_MONTH ) ; 
-	}
+		return (numberDayInMonthToFindLastDay == date._Day);
 
-	bool cheakIsFirstMonth(stDateInformation date) {
+	};
 
-		return (date.kMONTH == kNUMBER_FIRST_MONTH ) ; 
-	}
+	bool cheakIsLastDay(void) {
 
-	stDateInformation increasingDayByOne(stDateInformation date) {
+		return cheakIsLastDay(*this);
+	};
+
+
+	static inline bool cheakIsFirstDay(clsDate& date) {
+
+		unsigned short Integer const  numberDayInMonthToFindFirstDay{ _kONE };
+
+		return (numberDayInMonthToFindFirstDay == date._Day);
+
+	};
+
+
+	bool cheakIsFirstDay(void) {
+
+		return cheakIsFirstDay(*this);
+	};
+
+
+	static inline bool cheakIsLastMonth(clsDate& date) {
+
+		return (date._Month == _kNUMBER_MONTH);
+	};
+
+	bool cheakIsLastMonth() {
+		return cheakIsLastMonth(*this);
+	};
+
+	static inline bool cheakIsFirstMonth(clsDate& date) {
+
+		return (date._Month == _kNUMBER_FIRST_MONTH);
+	};
+
+	bool cheakIsFirstMonth(void) {
+		return cheakIsFirstMonth(*this);
+	};
+
+	static inline clsDate increasingDayByOne(clsDate& date) {
 
 		if (cheakIsLastDay(date)) {
-			date.kDAY = { kONE }; 
+			date._Day = { _kONE };
 
 			if (cheakIsLastMonth(date)) {
-				date.kYEAR++;
-				date.kMONTH = { kONE }; 
+				date._Year++;
+				date._Month = { _kONE };
 			}
-			else 
-				date.kMONTH++; 
-			
+			else
+				date._Month++;
+
 		}
 		else
-			date.kDAY++;
+			date._Day++;
 
 		return date;
 
-	}
+	};
 
-	
-	void SwapDates(stDateInformation& Date1, stDateInformation& Date2)
+	clsDate increasingDayByOne(void) {
+
+		return increasingDayByOne(*this);
+
+	};
+
+	static inline void SwapDates(clsDate& Date1, clsDate& Date2)
 	{
-		stDateInformation TempDate;
+		clsDate TempDate(0, 0, 0);
 
-		TempDate.kYEAR = Date1.kYEAR;
-		TempDate.kMONTH = Date1.kMONTH;
-		TempDate.kDAY = Date1.kDAY;
+		TempDate._Year = Date1._Year;
+		TempDate._Month = Date1._Month;
+		TempDate._Day = Date1._Day;
 
-		Date1.kYEAR = Date2.kYEAR;
-		Date1.kMONTH = Date2.kMONTH;
-		Date1.kDAY = Date2.kDAY;
+		Date1._Year = Date2._Year;
+		Date1._Month = Date2._Month;
+		Date1._Day = Date2._Day;
 
-		Date2.kYEAR = TempDate.kYEAR;
-		Date2.kMONTH = TempDate.kMONTH;
-		Date2.kDAY = TempDate.kDAY;
-	}
+		Date2._Year = TempDate._Year;
+		Date2._Month = TempDate._Month;
+		Date2._Day = TempDate._Day;
+	};
 
-	stDateInformation ReadInformationDateInSystem() {
+	void SwapDates(clsDate& Date2) {
 
-		stDateInformation date;
+		SwapDates(*this, Date2);
 
-		time_t  timee = time(NULL);
-		tm* timeUTC = localtime(&timee);
+	};
 
-		date.kDAY = timeUTC->tm_mday;
-		date.kYEAR = timeUTC->tm_year + 1900;
-		date.kDAY = timeUTC->tm_mon + 1;
+	static inline Integer  calcDifferanceBetweenTwoDate(clsDate date1, clsDate date2, bool flagIncludeEndDay = false) {
 
-		return date;
-
-	}
-
-	int  calcDifferanceBetweenTwoDate(stDateInformation date1, stDateInformation date2 , bool flagIncludeEndDay = false ) {
-
-		int day{}; 
-		short flagSwapValue{ kONE }; 
+		Integer day{};
+		short flagSwapValue{ _kONE };
 
 		if (!cheakDateOneLessThanDateTwo(date1, date2)) {
-			SwapDates(date1, date2); 
+			SwapDates(date1, date2);
 			flagSwapValue = { -1 };
 		}
 		while (cheakDateOneLessThanDateTwo(date1, date2)) {
-			day++; 
+			day++;
 			date1 = increasingDayByOne(date1);
 		}
-	
-		return flagIncludeEndDay ? ++day * flagSwapValue  : day * flagSwapValue ;
-	}
+
+		return flagIncludeEndDay ? ++day * flagSwapValue : day * flagSwapValue;
+
+	};
+
+	Integer calcDifferanceBetweenTwoDate(clsDate& date2, bool flagIncludeEndDay = false) {
+
+		return calcDifferanceBetweenTwoDate(*this, date2, flagIncludeEndDay);
+
+	};
 
 
 	///------------------------------- Date Function Incresing ------------------------------------------------ 
 
 
-	stDateInformation increasingDayByX(stDateInformation date, unsigned short _Integer const kNUMBER_ADDING_DAY_NEW) {
+	static inline clsDate increasingDayByX(clsDate date, unsigned short Integer const kNUMBER_ADDING_DAY_NEW) {
 
 		/*
-		unsigned short int totalDayAfterCalc = kNUMBER_ADDING_DAY_NEW + date.kDAY;
+		unsigned short Integer totalDayAfterCalc = kNUMBER_ADDING_DAY_NEW + date._Day;
 		bool flagInisde{ true };
 
-		while (totalDayAfterCalc >= numberOfDayInMonth(date.kYEAR, date.kMONTH)) {
+		while (totalDayAfterCalc >= numberOfDayInMonth(date._Year, date._Month)) {
 
-			totalDayAfterCalc = totalDayAfterCalc - numberOfDayInMonth(date.kYEAR, date.kMONTH);
+			totalDayAfterCalc = totalDayAfterCalc - numberOfDayInMonth(date._Year, date._Month);
 
-			if (date.kMONTH ==  kNUMBER_MONTH ) {
-				date.kMONTH = { kONE };
-				date.kYEAR++;
+			if (date._Month ==  _kNUMBER_MONTH ) {
+				date._Month = { _kONE };
+				date._Year++;
 
 			}
 			else {
 
-				if (totalDayAfterCalc == kZERO ) {
-					date.kDAY = kNUMBER_ADDING_DAY_NEW + kONE ;
+				if (totalDayAfterCalc == _kZERO ) {
+					date.kDAY = kNUMBER_ADDING_DAY_NEW + _kONE ;
 					flagInisde = { false };
 					break;
 				}
 
 				else {
-					date.kDAY = totalDayAfterCalc;
-					date.kMONTH++;
+					date._Day = totalDayAfterCalc;
+					date._Month++;
 					flagInisde = { false };
 				}
 			}
 
 		}
 		if (flagInisde)
-			date.kDAY = totalDayAfterCalc;
+			date._Day = totalDayAfterCalc;
 			*/
-		
-		for (_Integer counter{ kONE }; counter <= kNUMBER_ADDING_DAY_NEW; counter++)
+
+		for (Integer counter{ _kONE }; counter <= kNUMBER_ADDING_DAY_NEW; counter++)
 			date = increasingDayByOne(date);
-		
+
 		return date;
 
-	}
+	};
 
+	clsDate increasingDayByX(unsigned short Integer const kNUMBER_ADDING_DAY_NEW) {
 
-	stDateInformation increasingOneWeek(stDateInformation& date) {
+		return increasingDayByX(*this, kNUMBER_ADDING_DAY_NEW);
 
-		unsigned short _Integer totalDayAfterCalc = kNUMBER_OF_WEEK ;
+	};
+
+	static inline clsDate increasingOneWeek(clsDate& date) {
+
+		unsigned short Integer totalDayAfterCalc = _kNUMBER_OF_WEEK;
 		return increasingDayByX(date, totalDayAfterCalc);
 
-	}
+	};
 
-	stDateInformation increasingXWeek(stDateInformation& date, unsigned short _Integer const kNUMBER_WEEK) {
+	clsDate increasingOneWeek(void) {
 
-		for (_Integer counter{ kONE }; counter <= kNUMBER_WEEK; counter++)
+		return increasingOneWeek(*this);
+
+	};
+
+	static inline clsDate increasingXWeek(clsDate& date, unsigned short Integer const kNUMBER_WEEK) {
+
+		for (Integer counter{ _kONE }; counter <= kNUMBER_WEEK; counter++)
 			date = increasingOneWeek(date);
-		
 
-			return date; 
-	} 
 
-	stDateInformation increasingXWeekFast(stDateInformation& date, unsigned short _Integer const kNUMBER_WEEK) {
+		return date;
+	};
 
-		unsigned short _Integer numberWeek = kNUMBER_OF_WEEK * kNUMBER_WEEK;
+	clsDate increasingXWeek(unsigned short Integer const kNUMBER_WEEK) {
+
+		return increasingXWeek(*this, kNUMBER_WEEK);
+
+	};
+
+	static inline clsDate increasingXWeekFast(clsDate& date, unsigned short Integer const kNUMBER_WEEK) {
+
+		unsigned short Integer numberWeek = _kNUMBER_OF_WEEK * kNUMBER_WEEK;
 		return increasingDayByX(date, numberWeek);
 
-	}
-	stDateInformation increasingOneMonth(stDateInformation& date) {
+	};
+
+	clsDate increasingXWeekFast(unsigned short Integer const kNUMBER_WEEK) {
+
+		return increasingXWeekFast(*this, kNUMBER_WEEK);
+	};
+
+	static inline clsDate increasingOneMonth(clsDate& date) {
 
 
-		if (date.kMONTH == kNUMBER_MONTH ) {
-			date.kMONTH = kONE; 
-			date.kYEAR++; 
+		if (date._Month == _kNUMBER_MONTH) {
+			date._Month = _kONE;
+			date._Year++;
 		}
 		else
-			date.kMONTH++; 
+			date._Month++;
 
 		//last check day in date should not exceed max days in the current month
 			// example if date is 31/1/2022 increasing one month shouldnot be 31 / 2 / 2022, it should // be 28/2/2022
 
-		unsigned short _Integer const NumberOfDayOfMonth = numberOfDayInMonth(date.kYEAR, date.kMONTH);
+		unsigned short Integer const NumberOfDayOfMonth = numberOfDayInMonth(date._Year, date._Month);
 
-		if (date.kDAY > NumberOfDayOfMonth)
-			date.kDAY = NumberOfDayOfMonth; 
-
-
-		return date; 
-
-	}
-	stDateInformation increasingXMonth(stDateInformation& date, unsigned short _Integer const kNUMBER_MONTH_IN_USER) {
+		if (date._Day > NumberOfDayOfMonth)
+			date._Day = NumberOfDayOfMonth;
 
 
-		/*	for (_Integer counter{kONE}; counter <= kNUMBER_MONTH; counter++) {
+		return date;
 
-				if ((numberOfDayInMonth(date.kYEAR, date.kMONTH) % 30 == 0) && ( date.kMONTH <= date.kMONTH + kNUMBER_MONTH))
+	};
+
+	clsDate increasingOneMonth(void) {
+
+		return increasingOneMonth(*this);
+
+	};
+
+	static inline clsDate increasingXMonth(clsDate& date, unsigned short Integer const kNUMBER_MONTH_IN_USER) {
+
+
+		/*	for (Integer counter{_kONE}; counter <= _kNUMBER_MONTH; counter++) {
+
+				if ((numberOfDayInMonth(date._Year, date._Month) % 30 == 0) && ( date._Month <= date._Month + _kNUMBER_MONTH))
 					++counter2;
 			}
-			//unsigned short int numberMonth = numberOfDayInMonth(date.kYEAR, date.kMONTH) * kNUMBER_MONTH ;
-			return increasingDayByX(date, kNUMBER_MONTH* 30  + counter2 );
+			//unsigned short Integer numberMonth = numberOfDayInMonth(date._Year, date._Month) * _kNUMBER_MONTH ;
+			return increasingDayByX(date, _kNUMBER_MONTH * 30  + counter2 );
 			*/
 
-		/*for (int counter = kONE; counter <= kNUMBER_MONTH_IN_USER; counter++) {
+			/*for (Integer counter = _kONE; counter <= kNUMBER_MONTH_IN_USER; counter++) {
 
-			if (date.kMONTH == kNUMBER_MONTH) {
-				date.kMONTH = kONE ;
-				date.kYEAR++;
-			}
-			else
-				date.kMONTH++;
-		}*/
+				if (date._Month == kNUMBER_MONTH) {
+					date._Month = _kONE ;
+					date._Year++;
+				}
+				else
+					date._Month++;
+			}*/
 
-		for (_Integer counter{ kONE }; counter <= kNUMBER_MONTH_IN_USER; counter++)
-			date = increasingOneMonth(date); 
-	
+		for (Integer counter{ _kONE }; counter <= kNUMBER_MONTH_IN_USER; counter++)
+			date = increasingOneMonth(date);
+
 		return date;
-	}
+	};
 
-	stDateInformation increasingOneYear(stDateInformation& date) {
+	clsDate increasingXMonth(unsigned short Integer const kNUMBER_MONTH_IN_USER) {
 
-		date.kYEAR++;
+		return increasingXMonth(*this, kNUMBER_MONTH_IN_USER);
+	};
+
+	static inline clsDate increasingOneYear(clsDate& date) {
+
+		date._Year++;
 
 		// لو التاريخ 29/2 والسنة الجديدة مش كبيسة، خليه 28
-		if (date.kMONTH == 2 && date.kDAY == 29 && !isLeapYear(date.kYEAR)) {
-			date.kDAY = 28;
+		if (date._Month == 2 && date._Day == 29 && !isLeapYear(date._Year)) {
+			date._Day = 28;
 		}
 
 		return date;
-	}
-	stDateInformation increasingXYear(stDateInformation& date, unsigned short  _Integer const   kNUMBER_YEAR_INPUT_USER) {
+	};
 
-		for (_Integer counter{ kONE }; counter <= kNUMBER_YEAR_INPUT_USER; counter++)
+	clsDate increasingOneYear(void) {
+
+		return increasingOneYear(*this);
+
+	};
+
+	static inline clsDate increasingXYear(clsDate& date, unsigned short Integer const kNUMBER_YEAR_INPUT_USER) {
+
+		for (Integer counter{ _kONE }; counter <= kNUMBER_YEAR_INPUT_USER; counter++)
 			date = increasingOneYear(date);
 
 		return date;
-	}
+	};
 
-	stDateInformation increasingOneDecade(stDateInformation& date) {
+	clsDate increasingXYear(unsigned short Integer const kNUMBER_YEAR_INPUT_USER) {
 
-		date.kYEAR += kNUMBER_ONE_DECADE ;
+		return increasingXYear(*this, kNUMBER_YEAR_INPUT_USER);
+	};
 
-		if (date.kMONTH == 2 && date.kDAY == 29 && !isLeapYear(date.kYEAR)) {
-			date.kDAY = 28;
-		} 
-		return date;
-	}
+	static inline clsDate increasingOneDecade(clsDate& date) {
 
-	stDateInformation increasingXDecade(stDateInformation& date, unsigned short _Integer const kNUMBER_DECADE) {
+		date._Year += _kNUMBER_ONE_DECADE;
 
-		date.kYEAR += kNUMBER_ONE_DECADE * kNUMBER_DECADE;
-
-		if (date.kMONTH == 2 && date.kDAY == 29 && !isLeapYear(date.kYEAR)) {
-			date.kDAY = 28;
+		if (date._Month == 2 && date._Day == 29 && !isLeapYear(date._Year)) {
+			date._Day = 28;
 		}
 		return date;
-	}
+	};
 
-	stDateInformation increasingOneCentury(stDateInformation& date) {
+	clsDate increasingOneDecade(void) {
 
-		date.kYEAR += kNUMBER_ONE_CENTURY ;
+		return increasingOneDecade(*this);
 
-		if (date.kMONTH == 2 && date.kDAY == 29 && !isLeapYear(date.kYEAR)) {
-			date.kDAY = 28;
+	};
+
+	static inline clsDate increasingXDecade(clsDate& date, unsigned short Integer const kNUMBER_DECADE) {
+
+		date._Year += _kNUMBER_ONE_DECADE * kNUMBER_DECADE;
+
+		if (date._Month == 2 && date._Day == 29 && !isLeapYear(date._Year)) {
+			date._Day = 28;
 		}
-		return date; 
-	}
+		return date;
+	};
 
-	stDateInformation increasingOneMillennium(stDateInformation& date) {
+	clsDate increasingXDecade(unsigned short Integer const kNUMBER_DECADE) {
+
+		return increasingXDecade(*this, kNUMBER_DECADE);
+
+	};
+
+	static inline clsDate increasingOneCentury(clsDate& date) {
+
+		date._Year += _kNUMBER_ONE_CENTURY;
+
+		if (date._Month == 2 && date._Day == 29 && !isLeapYear(date._Year)) {
+			date._Day = 28;
+		}
+		return date;
+	};
+
+	clsDate increasingOneCentury(void) {
+
+		return increasingOneCentury(*this);
+
+	};
+
+	static inline clsDate increasingOneMillennium(clsDate& date) {
 
 		// millennium سنة ريفية 1000 عام 
-		date.kYEAR += kNUMBER_ONE_MILLENNIUM ;
+		date._Year += _kNUMBER_ONE_MILLENNIUM;
 
-		if (date.kMONTH == 2 && date.kDAY == 29 && !isLeapYear(date.kYEAR)) {
-			date.kDAY = 28;
-		} 
+		if (date._Month == 2 && date._Day == 29 && !isLeapYear(date._Year)) {
+			date._Day = 28;
+		}
 		return date;
-	}
+	};
+
+	clsDate increasingOneMillennium(void) {
+
+		return increasingOneMillennium(*this);
+	};
+
 
 	// ------------------------------------- Substracting Date ---------------------------------------
 
-	stDateInformation decreasingDayByOne(stDateInformation& date) {
+	static inline clsDate decreasingDayByOne(clsDate& date) {
 
-		unsigned short _Integer const numberLastMonth = date.kMONTH;
-		unsigned short _Integer const numberLastYear = date.kYEAR;
+		unsigned short Integer const numberLastMonth = date._Month;
+		unsigned short Integer const numberLastYear = date._Year;
 
 		if (cheakIsFirstDay(date)) {
 
 
 			if (cheakIsFirstMonth(date)) {
-				date.kYEAR--;
-				date.kMONTH = { kNUMBER_MONTH };
+				date._Year--;
+				date._Month = { _kNUMBER_MONTH };
 			}
 			else
-				date.kMONTH--;
+				date._Month--;
 
 
-			date.kDAY = { numberOfDayInMonth(date.kYEAR  ,	date.kMONTH) };
+			date._Day = { numberOfDayInMonth(date._Year  ,	date._Month) };
 
 		}
 		else
-			date.kDAY--;
+			date._Day--;
 
 		return date;
 
-	}
+	};
+
+	clsDate decreasingDayByOne(void) {
+		return decreasingDayByOne(*this);
+	};
+
+	static inline clsDate decreasingDayByX(clsDate& date, unsigned short Integer const kNUMBER_DAY_SUBSTRACTING) {
+
+		for (Integer counter{ _kONE }; counter <= kNUMBER_DAY_SUBSTRACTING; counter++)
+			date = decreasingDayByOne(date);
+
+		return date;
 
 
-	stDateInformation decreasingDayByX(stDateInformation& date , unsigned short _Integer const kNUMBER_DAY_SUBSTRACTING ) {
+	};
 
-		for (_Integer counter{ kONE }; counter <= kNUMBER_DAY_SUBSTRACTING; counter++)
-			date = decreasingDayByOne(date); 
+	clsDate decreasingDayByX(unsigned short Integer const kNUMBER_DAY_TO_NEED_SUBSTRACTING) {
 
-		return date; 
+		return decreasingDayByX(*this, kNUMBER_DAY_TO_NEED_SUBSTRACTING);
 
+	};
 
-	}
+	static inline clsDate decreasingOneWeek(clsDate& date) {
 
+		for (Integer counter{ _kONE }; counter <= _kNUMBER_OF_WEEK; counter++)
+			date = decreasingDayByOne(date);
 
+		return date;
+	};
 
-	stDateInformation decreasingOneWeek(stDateInformation& date) {
+	clsDate decreasingOneWeek(void) {
+		return decreasingOneWeek(*this);
+	};
 
-		for (_Integer counter{ kONE }; counter <= kNUMBER_OF_WEEK; counter++)
-			date = decreasingDayByOne(date); 
+	static inline clsDate decreasingWeekX(clsDate& date, unsigned short Integer const kNUMBER_WEEK_SUBSTRACTING) {
 
-		return date; 
-	}
-
-	stDateInformation decreasingWeekX(stDateInformation& date, unsigned short _Integer const kNUMBER_WEEK_SUBSTRACTING ) {
-
-		for (_Integer counter{ kONE }; counter <= kNUMBER_WEEK_SUBSTRACTING; counter++)
+		for (Integer counter{ _kONE }; counter <= kNUMBER_WEEK_SUBSTRACTING; counter++)
 			date = decreasingOneWeek(date);
 
 		return date;
-	}
+	};
 
-	stDateInformation decreasingOneMonth(stDateInformation& date) {
+	clsDate decreasingWeekX(unsigned short Integer const kNUMBER_DAY_TO_NEED_SUBSTRACTING) {
+		return decreasingWeekX(*this, kNUMBER_DAY_TO_NEED_SUBSTRACTING);
+	};
 
-		if(cheakIsFirstMonth(date)) {
-			date.kMONTH = { kNUMBER_MONTH }; 
-			date.kYEAR--; 
+
+	static inline clsDate decreasingOneMonth(clsDate& date) {
+
+		if (cheakIsFirstMonth(date)) {
+			date._Month = { _kNUMBER_MONTH };
+			date._Year--;
 
 		}
-		else 
-			date.kMONTH--; 
-		
+		else
+			date._Month--;
 
-		unsigned short _Integer const numberDay{ numberOfDayInMonth(date.kYEAR , date.kMONTH) };
-		if (date.kDAY > numberDay)
-			date.kDAY = numberDay; 
 
-			return date;
-	}
-
-	stDateInformation decreasingMonthX(stDateInformation& date , unsigned short _Integer const kNUMBER_SUBSTRACTING_MONTH ) {
-	
-		for (_Integer counter{ kONE }; counter <= kNUMBER_SUBSTRACTING_MONTH; counter++)
-			date = decreasingOneMonth(date); 
-
-		return date; 
-	}
-
-	stDateInformation decreasingOneYear(stDateInformation& date) {
-
-		date.kYEAR--; 
-
-		if (date.kDAY == 29 && date.kMONTH == 2 && !isLeapYear(date.kYEAR))
-			date.kDAY = 28; 
+		unsigned short Integer const numberDay{ numberOfDayInMonth(date._Year , date._Month) };
+		if (date._Day > numberDay)
+			date._Day = numberDay;
 
 		return date;
-	}
+	};
 
-	stDateInformation decreasingYearX(stDateInformation& date, unsigned short _Integer const kNUMBER_SUBSTRACTING_YEAR) {
+	clsDate decreasingOneMonth(void) {
 
-		for (_Integer counter{ kONE }; counter <= kNUMBER_SUBSTRACTING_YEAR; counter++)
+		return decreasingOneMonth(*this);
+
+	};
+
+
+	static inline clsDate decreasingMonthX(clsDate& date, unsigned short Integer const kNUMBER_SUBSTRACTING_MONTH) {
+
+		for (Integer counter{ _kONE }; counter <= kNUMBER_SUBSTRACTING_MONTH; counter++)
+			date = decreasingOneMonth(date);
+
+		return date;
+	};
+
+	clsDate decreasingMonthX(unsigned short Integer const kNUMBER_TO_BE_SUBSTRACTING_MONTH) {
+		return decreasingMonthX(*this, kNUMBER_TO_BE_SUBSTRACTING_MONTH);
+	};
+
+	static inline clsDate decreasingOneYear(clsDate& date) {
+
+		date._Year--;
+
+		if (date._Day == 29 && date._Month == 2 && !isLeapYear(date._Year))
+			date._Day = 28;
+
+		return date;
+	};
+
+	clsDate decreasingOneYear(void) {
+
+		return decreasingOneYear(*this);
+
+	};
+
+	static inline clsDate decreasingYearX(clsDate& date, unsigned short Integer const kNUMBER_SUBSTRACTING_YEAR) {
+
+		for (Integer counter{ _kONE }; counter <= kNUMBER_SUBSTRACTING_YEAR; counter++)
 			date = decreasingOneYear(date);
 
 		return date;
-	}
-	stDateInformation decreasingOneDecade(stDateInformation& date) {
-	
-		date.kYEAR -= kNUMBER_ONE_DECADE; 
+	};
 
-		if (date.kDAY == 29 && date.kMONTH == 2 && !isLeapYear(date.kYEAR))
-			date.kDAY = 28;
-		return date; 
-	
-	}
+	clsDate decreasingYearX(unsigned short Integer const kNUMBER_TO_BE_SUBSTRACTING_YEAR) {
 
-	stDateInformation decreasingDecadeX(stDateInformation& date, unsigned short _Integer const kNUMBER_SUBSTRACTING_DECADE) {
+		return decreasingYearX(*this, kNUMBER_TO_BE_SUBSTRACTING_YEAR);
+	};
 
-		for (_Integer counter{ kONE }; counter <= kNUMBER_SUBSTRACTING_DECADE; counter++)
-			date = decreasingOneDecade(date); 
+	static inline clsDate decreasingOneDecade(clsDate& date) {
+
+		date._Year -= _kNUMBER_ONE_DECADE;
+
+		if (date._Day == 29 && date._Month == 2 && !isLeapYear(date._Year))
+			date._Day = 28;
+		return date;
+
+	};
+
+
+	clsDate decreasingOneDecade(void) {
+
+		return decreasingOneDecade(*this);
+
+	};
+
+	static inline clsDate decreasingDecadeX(clsDate& date, unsigned short Integer const kNUMBER_SUBSTRACTING_DECADE) {
+
+		for (Integer counter{ _kONE }; counter <= kNUMBER_SUBSTRACTING_DECADE; counter++)
+			date = decreasingOneDecade(date);
 
 		return date;
 
-	}
-	stDateInformation decreasingOneCentury(stDateInformation& date) {
+	};
 
-		date.kYEAR -= kNUMBER_ONE_CENTURY;
+	clsDate decreasingDecadeX(unsigned short Integer const kNUMBER_TO_BE_SUBSTRACTING_YEAR) {
+		return decreasingDecadeX(*this, kNUMBER_TO_BE_SUBSTRACTING_YEAR);
+	};
 
-		if (date.kDAY == 29 && date.kMONTH == 2 && !isLeapYear(date.kYEAR))
-			date.kDAY = 28;
+	static inline  clsDate decreasingOneCentury(clsDate& date) {
 
-		return date;
+		date._Year -= _kNUMBER_ONE_CENTURY;
 
-	} 
-
-	stDateInformation decreasingOneMilleninum(stDateInformation& date) {
-
-		date.kYEAR -= kNUMBER_ONE_MILLENNIUM;
-
-		if (date.kDAY == 29 && date.kMONTH == 2 && !isLeapYear(date.kYEAR))
-			date.kDAY = 28;
+		if (date._Day == 29 && date._Month == 2 && !isLeapYear(date._Year))
+			date._Day = 28;
 
 		return date;
 
-	}
+	};
 
+
+	clsDate decreasingOneCentury(void) {
+
+		return decreasingOneCentury(*this);
+	};
+
+	static inline clsDate decreasingOneMilleninum(clsDate& date) {
+
+		date._Year -= _kNUMBER_ONE_MILLENNIUM;
+
+		if (date._Day == 29 && date._Month == 2 && !isLeapYear(date._Year))
+			date._Day = 28;
+
+		return date;
+
+	};
 
 	// -----------------------------------------------------------------------------------------
 
 
-	bool isEndOfWeek(stDateInformation date) {
+	static inline bool isEndOfWeek(clsDate& date) {
 
 		return (findDayOfWeekString(static_cast<enDayOfWeek> (findTheOrderOfDayInWeek(date))) == findDayOfWeekString(static_cast<enDayOfWeek> (6)));
 		//return (findTheOrderOfDayInWeek(date) == 6); 
 
-	}
+	};
 
+	bool isEndOfWeek(void) {
+		return isEndOfWeek(*this);
+	};
 
-	bool isWeekendDay(stDateInformation date) {
+	static inline bool isWeekendDay(clsDate& date) {
 
 		return (findDayOfWeekString(static_cast<enDayOfWeek> (findTheOrderOfDayInWeek(date))) == findDayOfWeekString(static_cast<enDayOfWeek> (5))
 			|| findDayOfWeekString(static_cast<enDayOfWeek> (findTheOrderOfDayInWeek(date))) == findDayOfWeekString(static_cast<enDayOfWeek> (6)));
 
 		//(findTheOrderOfDayInWeek(date) == 5 || findTheOrderOfDayInWeek(date) == 6 )
 
-	}
+	};
 
-	bool isBusinessDay(stDateInformation date) {
+	bool isWeekendDay(void) {
+
+		return isWeekendDay(*this);
+
+	};
+
+
+	static inline bool isBusinessDay(clsDate& date) {
 
 		return !isWeekendDay(date);
 
-	}
+	};
 
+	bool isBusinessDay(void) {
 
-	unsigned short _Integer dayUntilEndOfWeek(stDateInformation date) {
+		return isBusinessDay(*this);
 
-		unsigned short _Integer counter{ kZERO };
-		unsigned short _Integer  orderDayWeek = findTheOrderOfDayInWeek(date);
+	};
 
-		/*for (int i{orderDayWeek}; i < 6; i++)
+	static inline unsigned short Integer dayUntilEndOfWeek(clsDate& date) {
+
+		unsigned short Integer counter{ _kZERO };
+		unsigned short Integer orderDayWeek = findTheOrderOfDayInWeek(date);
+
+		/*for (Integer i{orderDayWeek}; i < 6; i++)
 				++counter;*/
 
 		while (orderDayWeek++ != 6)
@@ -882,23 +1201,28 @@ namespace myDate {
 
 		return counter;
 
-		//return 6 - findTheOrderOfDayInWeek(date.kYEAR , date.kMONTH , date.kDAY );
-	}
+		//return 6 - findTheOrderOfDayInWeek(date._Year , date._Month , date._Day );
+	};
 
-	unsigned short _Integer dayUntilEndOfMonth(stDateInformation date) {
+	unsigned short Integer dayUntilEndOfWeek(void) {
 
-		unsigned short _Integer counter{ kZERO };
-		unsigned short _Integer  numberDayMonth = numberOfDayInMonth(date.kYEAR, date.kMONTH);
-		unsigned short _Integer  Day = date.kDAY;
+		return dayUntilEndOfWeek(*this);
+	};
 
-		stDateInformation date2;
-		date2.kDAY = numberOfDayInMonth(date.kYEAR, date.kMONTH);
-		date2.kMONTH = date.kMONTH;
-		date2.kYEAR = date.kYEAR;
+	static inline unsigned short Integer dayUntilEndOfMonth(clsDate& date) {
+
+		unsigned short Integer counter{ _kZERO };
+		unsigned short Integer numberDayMonth = numberOfDayInMonth(date._Year, date._Month);
+		unsigned short Integer Day = date._Day;
+
+		clsDate date2(0, 0, 0);
+		date2._Day = numberOfDayInMonth(date._Year, date._Month);
+		date2._Month = date._Month;
+		date2._Year = date._Year;
 
 		return calcDifferanceBetweenTwoDate(date, date2, true);
 
-		/*for (int i{orderDayWeek}; i < 6; i++)
+		/*for (Integer i{orderDayWeek}; i < 6; i++)
 				++counter;*/
 
 				/*	while (Day++ <= numberDayMonth)
@@ -907,78 +1231,90 @@ namespace myDate {
 
 					/*	counter = numberDayMonth - Day + 1;
 						return counter;*/
-	}
+	};
+
+	unsigned short Integer dayUntilEndOfMonth(void) {
+		return dayUntilEndOfMonth(*this);
+	};
+
+	static inline unsigned short Integer dayUntilEndOfYear(clsDate& date) {
 
 
-	unsigned short _Integer dayUntilEndOfYear(stDateInformation date) {
+		/*	unsigned short Integer  numberdayUntilEndOfYear{dayUntilEndOfMonth(date)};
 
+			for (Integer counter = { date._Month + 1 }; counter <= 12; counter++)
+				numberdayUntilEndOfYear += numberOfDayInMonth(date._Year, counter);
 
-	/*	unsigned short _Integer  numberdayUntilEndOfYear{dayUntilEndOfMonth(date)};
+			return numberdayUntilEndOfYear;
 
-		for (int counter = { date.kMONTH + 1 }; counter <= 12; counter++)
-			numberdayUntilEndOfYear += numberOfDayInMonth(date.kYEAR, counter);
+			*/
 
-		return numberdayUntilEndOfYear;
-
-		*/
-
-		stDateInformation date2;
-		date2.kDAY = 31;
-		date2.kMONTH = kNUMBER_MONTH ;
-		date2.kYEAR = date.kYEAR; 
+		clsDate date2(0, 0, 0);
+		date2._Day = 31;
+		date2._Month = _kNUMBER_MONTH;
+		date2._Year = date._Year;
 
 		return calcDifferanceBetweenTwoDate(date, date2, true);
-	}
- 
+	};
 
-	unsigned short _Integer vacationDays(stDateInformation date1, stDateInformation date2) {
+	unsigned short Integer dayUntilEndOfYear(void) {
+		return dayUntilEndOfYear(*this);
+	};
+
+	static inline unsigned short Integer vacationDays(clsDate& date1, clsDate& date2) {
 
 		if (!cheakDateOneLessThanDateTwo(date1, date2)) {
-			SwapDates(date1, date2); 
+			SwapDates(date1, date2);
 		}
 
-		unsigned short _Integer counterVacationDays{ kZERO };
+		unsigned short Integer counterVacationDays{ _kZERO };
 
-	/*	1-
-	
-		unsigned short _Integer begingingDate1 = { numberOfBeginingYear(date1.kYEAR , date1.kMONTH , date1.kDAY) };
-		unsigned short _Integer begingingDate2 = { numberOfBeginingYear(date2.kYEAR , date2.kMONTH , date2.kDAY) };
+		/*	1-
 
-			while (begingingDate1 <= begingingDate2) {
+			unsigned short Integer begingingDate1 = { numberOfBeginingYear(date1._Year , date1._Month , date1._Day) };
+			unsigned short Integer begingingDate2 = { numberOfBeginingYear(date2._Year , date2._Month , date2._Day) };
 
-			unsigned short _Integer orderDay{ findTheOrderOfDayInWeek(date1.kYEAR , date1.kMONTH , date1.kDAY) };
+				while (begingingDate1 <= begingingDate2) {
 
-			if( (orderDay != 5) && ( orderDay != 6) )
-			counterVacationDays++;
+				unsigned short Integer orderDay{ findTheOrderOfDayInWeek(date1._Year , date1._Month , date1._Day) };
 
-			date1 = increasingDayByOne(date1); 
-			orderDay = { findTheOrderOfDayInWeek(date1.kYEAR , date1.kMONTH , date1.kDAY) };
+				if( (orderDay != 5) && ( orderDay != 6) )
+				counterVacationDays++;
 
-			begingingDate1 = { numberOfBeginingYear(date1.kYEAR , date1.kMONTH , date1.kDAY) };
-			begingingDate2 = { numberOfBeginingYear(date2.kYEAR , date2.kMONTH , date2.kDAY) };
+				date1 = increasingDayByOne(date1);
+				orderDay = { findTheOrderOfDayInWeek(date1.kYEAR , date1._Month , date1.kDAY) };
 
-		}
-			return counterVacationDays -1   ;
-		*/
+				begingingDate1 = { numberOfBeginingYear(date1._Year , date1._Month , date1._Day) };
+				begingingDate2 = { numberOfBeginingYear(date2._Year , date2._Month , date2._Day) };
+
+			}
+				return counterVacationDays - 1   ;
+			*/
 
 		while (cheakDateOneLessThanDateTwo(date1, date2)) {
 
-			unsigned short _Integer orderDay{ findTheOrderOfDayInWeek(date1.kYEAR , date1.kMONTH , date1.kDAY) };
+			unsigned short Integer orderDay{ findTheOrderOfDayInWeek(date1._Year , date1._Month , date1._Day) };
 
 			if (isBusinessDay(date1))
 				counterVacationDays++;
 
 			date1 = increasingDayByOne(date1);
-			orderDay = { findTheOrderOfDayInWeek(date1.kYEAR , date1.kMONTH , date1.kDAY) };
+			orderDay = { findTheOrderOfDayInWeek(date1._Year , date1._Month , date1._Day) };
 
 		}
 
-		return counterVacationDays  ;
-	}
+		return counterVacationDays;
+	};
 
-	stDateInformation returnDateAccordingVacationDays(stDateInformation date, unsigned short _Integer const  kVACATION_DAY ) {
 
-		_Integer counter{ kZERO };
+	unsigned short Integer vacationDays(clsDate& date2) {
+		return vacationDays(*this, date2);
+
+	};
+
+	static inline clsDate returnDateAccordingVacationDays(clsDate& date, unsigned short Integer const  kVACATION_DAY) {
+
+		Integer counter{ _kZERO };
 
 
 		while (counter < kVACATION_DAY) {
@@ -991,193 +1327,150 @@ namespace myDate {
 
 		//Day of return day in the work 
 		date = increasingDayByOne(date);
-	
-	
-		return date; 
 
- 	}
 
-	bool Date1AfterDate2(stDateInformation date1, stDateInformation date2) {
+		return date;
+
+	};
+
+	clsDate returnDateAccordingVacationDays(unsigned short Integer const kVACATION_DAY_CURRENT) {
+
+		return returnDateAccordingVacationDays(*this, kVACATION_DAY_CURRENT);
+
+	};
+
+	static inline bool Date1AfterDate2(clsDate& date1, clsDate& date2) {
 
 		//return (cheakDateOneLessThanDateTwo(date1, date2) == false);
-		return (cheakDateOneLessThanDateTwo(date2, date1) && !IsDate1EqualDate2(date1 , date2 ));
+		return (cheakDateOneLessThanDateTwo(date2, date1) && !IsDate1EqualDate2(date1, date2));
 
-	}
+	};
 
-	 short _Integer compareTwoDates(stDateInformation date1, stDateInformation date2) {
+	bool Date1AfterDate2(clsDate& date2) {
 
-	
+		return Date1AfterDate2(*this, date2);
+	};
+
+
+	static inline short Integer compareTwoDates(clsDate& const date1, clsDate& const date2) {
+
+
 		if (IsDate1EqualDate2(date1, date2))
-			return enCompareTwoDate::kEQUAL  ;
+			return enCompareTwoDate::kEQUAL;
 		else if (cheakDateOneLessThanDateTwo(date1, date2))
-			return enCompareTwoDate::kBEFORE ;
-		
+			return enCompareTwoDate::kBEFORE;
+
 		/*else if (Date1AfterDate2(date1, date2))
 			return enCompareTwoDate::kAFTER ;
 
-		else kZERO; */
+		else _kZERO; */
 		return enCompareTwoDate::kAFTER;
 
-		//return (IsDate1EqualDate2(date1, date2) ? kZERO : (cheakDateOneLessThanDateTwo(date1, date2) ? -1 : (Date1AfterDate2(date1, date2) ? 1 : 0)));
+		//return (IsDate1EqualDate2(date1, date2) ? _kZERO : (cheakDateOneLessThanDateTwo(date1, date2) ? -1 : (Date1AfterDate2(date1, date2) ? 1 : 0)));
+	};
+
+	short Integer compareTwoDates(clsDate& date2) {
+
+		return compareTwoDates(*this, date2);
+
+	};
+
+	//----
+
+
+
+	static inline bool validationDate(clsDate date) {
+
+		if (date._Month < _kONE || date._Month > _kNUMBER_MONTH) return false;
+
+		unsigned short Integer numberDayMonth = numberOfDayInMonth(date._Year, date._Month);
+		if (numberDayMonth < date._Day) return false;
+
+		// is case not entered in the before two if statment 
+		return true;
 	}
 
+	bool validationDate(void) {
+		return validationDate(*this);
+	};
+
+	static inline string readDate(const string kMESSAGE) {
+
+		string dateInfo{ "" };
+
+		cout << kMESSAGE;
+		getline(cin, dateInfo);
+
+		return dateInfo;
+
+	};
 
 
-	 bool isOverLapTwoDate(stPeriodOfDate periodOne, stPeriodOfDate periodTwo) {
-	 
-		 //return !(cheakDateOneLessThanDateTwo(periodTwo.endDate, periodOne.startDate) || cheakDateOneLessThanDateTwo(periodOne.endDate, periodTwo.startDate));
+	static inline clsDate fillDateInformation(vector<string> const& kINFORMATION_DATE, string const kSEPARATOR = "/") {
 
-		 if (compareTwoDates(periodTwo.endDate, periodOne.startDate) == enCompareTwoDate::kBEFORE || compareTwoDates(periodTwo.startDate, periodOne.endDate) == enCompareTwoDate::kAFTER)
-			 return false;
-		 else
-			 return true; 
-	 }
+		clsDate dateInfo(0, 0, 0);
 
-	 unsigned short _Integer calcDifferantaceBetweenTwoDateInPeriod(stPeriodOfDate periodOne , bool isIncludeEndDay = false )  {
-		 return calcDifferanceBetweenTwoDate(periodOne.startDate, periodOne.endDate , isIncludeEndDay );
-	 }
+		if (kINFORMATION_DATE.size() > 2) {
+			dateInfo._Day = stoi(kINFORMATION_DATE[0]);
+			dateInfo._Month = stoi(kINFORMATION_DATE[1]);
+			dateInfo._Year = stoi(kINFORMATION_DATE[2]);
+		}
+		return dateInfo;
 
-	 bool isDateWithinPeriod(stPeriodOfDate period, stDateInformation date) {
+	};
 
-		return (compareTwoDates(date, period.endDate) == enCompareTwoDate::kBEFORE && compareTwoDates(date, period.startDate) == enCompareTwoDate::kAFTER);
-			 
-	 }
+	static inline string replaseDatekDAY_kMONTH_kYEAR_FormatDate(clsDate& date, string replace = "dd/mm/yyyy") {
 
-	  short _Integer countOverlapDayBetweenTwoDate(stPeriodOfDate periodOne, stPeriodOfDate periodTwo) {
+		string dateFormat = "";
 
-		 unsigned short _Integer countOverlapDay{ kZERO };
+		dateFormat = clsString::replaseWords(replace, "dd", to_string(date._Day));
+		dateFormat = clsString::replaseWords(dateFormat, "mm", to_string(date._Month));
+		dateFormat = clsString::replaseWords(dateFormat, "yyyy", to_string(date._Year));
+		dateFormat = clsString::replaseWords(dateFormat, "yy", to_string(date._Year % 100));
+		dateFormat = clsString::replaseWords(dateFormat, "DDDD", findDayOfWeekString(static_cast <enDayOfWeek> (findTheOrderOfDayInWeek(date._Year, date._Month, date._Day)), true));
+		dateFormat = clsString::replaseWords(dateFormat, "MMM", findNameMounthString(static_cast <enMounth> (date._Month)));
+		dateFormat = clsString::replaseWords(dateFormat, "Month", findNameMounthString(static_cast <enMounth> (date._Month), true));
 
-		 if (!isOverLapTwoDate(periodOne, periodTwo))
-			 return kZERO;
+		return dateFormat;
+	};
 
-		 if (isOverLapTwoDate(periodOne, periodTwo)) {
+	static inline string DateOfSystem() {
 
-			 if (compareTwoDates(periodTwo.startDate, periodOne.startDate) == enCompareTwoDate::kAFTER && compareTwoDates(periodOne.endDate , periodTwo.endDate) == enCompareTwoDate::kBEFORE) 
-				 countOverlapDay = calcDifferanceBetweenTwoDate(periodTwo.startDate , periodOne.endDate, true) ;
-			 
-			 else if (compareTwoDates(periodOne.endDate, periodTwo.endDate) == enCompareTwoDate::kAFTER && compareTwoDates(periodOne.startDate, periodTwo.endDate) == enCompareTwoDate::kBEFORE) 
-				 countOverlapDay = calcDifferanceBetweenTwoDate(periodOne.startDate, periodTwo.endDate , true );
-			 
+		time_t timme = time(NULL);
+		tm* LocalTime = localtime(&timme);
+		string date = to_string(LocalTime->tm_mday)+ "/" + to_string(LocalTime->tm_mon + 1) + "/" + to_string(LocalTime->tm_year + 1900 );
 
-		 }
+		return date; 
+	};
 
-		 return countOverlapDay;
+	//static inline void createDelay(unsigned short int const kNUMBER_OF_SECOUNDS) {
 
-	 }
+	//	time_t timee = time(NULL) + kNUMBER_OF_SECOUNDS;
+	//	while (time(NULL) < timee);
 
-	  bool validationDate(stDateInformation date) {
+	//};
 
-		  if (date.kMONTH < kONE || date.kMONTH > kNUMBER_MONTH )return false; 
+	//static inline void printClockSystem() {
+	//	time_t timme = time(NULL);
+	//	tm* LocalTime = localtime(&timme);
 
-		  unsigned short _Integer numberDayMonth = numberOfDayInMonth(date.kYEAR, date.kMONTH);
-		  if (numberDayMonth < date.kDAY) return false; 
+	//	cout << LocalTime->tm_hour << ":" << LocalTime->tm_min << ":" << LocalTime->tm_sec << clsUtility::createNewLine(1);
+	//}
+	//static inline void clockSystem() {
 
-		  // is case not entered in the before two if statment 
-		  return true;
-	  }
+	//	while (true) {
 
-	  string readDate(const string kMESSAGE) {
+	//		//clsUtility::clearDetailesInSecren(); 
+	//		printClockSystem();
+	//		createDelay(1);
+	//	}
+	//}
+	static inline string dateTimeLocal() {
 
-		  string dateInfo{ "" }; 
+		time_t timme = time(NULL);
+		tm* LocalTime = localtime(&timme);
+		string clockTime = to_string( LocalTime->tm_hour ) + ":" + to_string (  LocalTime->tm_min )  + ":" + to_string ( LocalTime->tm_sec ) ; 
+		return clockTime;
+	}
+};
 
-		  cout << kMESSAGE; 
-		  getline(cin, dateInfo);
-
-		  return dateInfo; 
-
-	  }
-
-	  vector<string> splitDateInformation(string  &dateInformation , string const kSEPARATOR = "/") {
-
-		  vector<string> splitD{}; 
-
-		  string text{ "" }; 
-		  _Integer positionText{ kZERO };
-
-		  while ((positionText = dateInformation.find(kSEPARATOR)) != string::npos) {
-			  text = dateInformation.substr(kZERO, positionText);
-
-			  if (text != "")
-				  splitD.emplace_back(text); 
-
-			  dateInformation.erase(kZERO, positionText + kSEPARATOR.length());
-		  }
-
-		  if(!dateInformation.empty())
-			  splitD.emplace_back(dateInformation);
-
-		  return splitD;
-
-	  }
-	  
-	  stDateInformation fillDateInformation(vector<string> const kINFORMATION_DATE, string const kSEPARATOR = "/") {
-
-		  stDateInformation dateInfo; 
-
-		  if (kINFORMATION_DATE.size() > 2) {
-			  dateInfo.kDAY = stoi(kINFORMATION_DATE[0]);
-			  dateInfo.kMONTH = stoi(kINFORMATION_DATE[1]);
-			  dateInfo.kYEAR = stoi(kINFORMATION_DATE[2]);
-		  } 
-		  return dateInfo;
-
-	  }
-
-	  string convertRecordToLine(stDateInformation &dateInformation, string const kSEPARATOR = "/") {
-
-		  string lineDate; 
-
-		  lineDate += to_string ( dateInformation.kDAY) + kSEPARATOR; 
-		  lineDate += to_string( dateInformation.kMONTH  ) + kSEPARATOR;
-		  lineDate += to_string( dateInformation.kYEAR );
-
-		  return lineDate; 
-	  }
-
-	  string replaceStringToString(string textString, string textReplace, string  kTEXT_TO_REPLACE) {
-
-		  short  positionText = textString.find(textReplace);
-
-		  while (positionText != string::npos) {
-
-			  textString = textString.replace(positionText , textReplace.length() , kTEXT_TO_REPLACE);
-			   positionText = textString.find(textReplace);
-
-		  }
-		  return textString;
-
-	  }
-
-	  string replaseDatekDAY_kMONTH_kYEAR(vector<string> dateInformations, unsigned short _Integer  indexInformationDate, unsigned short _Integer  indexInformationDateToReplase , string const & kSEPARATOR = "/") {
-
-		  if (indexInformationDate - kONE  < 3 && indexInformationDateToReplase - kONE < 3) {
-
-			  string temp = dateInformations[indexInformationDate - kONE];
-			  dateInformations[indexInformationDate - kONE] = dateInformations[indexInformationDateToReplase - kONE];
-			  dateInformations[indexInformationDateToReplase - kONE] = temp;
-		  }
-		  else 
-			  indexInformationDate = kZERO, indexInformationDateToReplase = kZERO;
-
-
-		  stDateInformation dateInformationAfterRepleace = fillDateInformation(dateInformations, kSEPARATOR);
-
-		  return convertRecordToLine(dateInformationAfterRepleace, kSEPARATOR);
-
-	  }
-
-	  string replaseDatekDAY_kMONTH_kYEAR_FormatDate (stDateInformation date , string replace = "dd/mm/yyyy") {
-
-		  string dateFormat = ""; 
-
-		  dateFormat = replaceStringToString(replace, "dd", to_string ( date.kDAY ) );
-		  dateFormat = replaceStringToString(dateFormat, "mm", to_string ( date.kMONTH ) );
-		  dateFormat = replaceStringToString(dateFormat, "yyyy", to_string ( date.kYEAR ) );
-		  dateFormat = replaceStringToString(dateFormat, "yy", to_string ( date.kYEAR % 100  ) );	
-		  dateFormat = replaceStringToString(dateFormat, "DDDD", findDayOfWeekString(static_cast <enDayOfWeek> (findTheOrderOfDayInWeek(date.kYEAR, date.kMONTH, date.kDAY)), true));
-		  dateFormat = replaceStringToString(dateFormat, "MMM", findNameMounthString(static_cast <enMounth> (date.kMONTH)));
-		  dateFormat = replaceStringToString(dateFormat, "Month", findNameMounthString(static_cast <enMounth> (date.kMONTH), true));
-
-		  return dateFormat; 
-	  } 
-}; 
